@@ -1,7 +1,9 @@
 import express from 'express';
+import cors from 'cors'
 import { graphqlHTTP } from "express-graphql";
 import { schema } from "../graphql/schema";
 import conction from '../db'
+
 
 
 
@@ -15,6 +17,7 @@ class Server {
     config() {
         this.app.set('port', process.env.PORT || 4000);
         conction.connectDB();
+        this.app.use(cors());
     }
 
     routes() {
