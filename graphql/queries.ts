@@ -2,7 +2,7 @@ import {GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql';
 
 import { UserType, EmpresaType, CommentType } from "./types";
 import User, { IUser } from "../models/User";
-import Empresa, {IEmpresa} from "../models/Empresa";
+import Empresa from "../models/Empresa";
 import Comment,{IComment} from "../models/Comment";
 
 export const users = {
@@ -24,9 +24,8 @@ export const empresas = {
   type: new GraphQLList(EmpresaType),
   description: "retrieves a list of empresas",
   resolve: (parent:any, args:any,  { verifiedUser }:any) => {
-    // console.log(verifiedUser)
     if (!verifiedUser) return "No user found";
-     return Empresa.find()
+      return Empresa.find();
   }
 };
 
