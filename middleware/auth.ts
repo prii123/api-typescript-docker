@@ -9,7 +9,7 @@ export interface Response {
 }
 
 export interface Request{
-  verifiedUser:JwtPayload;
+  verifiedUser:any;
   verified:string;
   headers:JwtPayload;
 }
@@ -18,26 +18,50 @@ export interface Request{
 
 export const authenticate = (req: Request, res: Response, next: NextFunction):void => {
 
-  // console.log(req.headers)
-  const token: string = req.headers.authorization?.split(" ")[1] || "";
-  if (token) {
-    
-    try {
-      const verified = jwt.verify(token, config.JWT_SECRET);
-      // console.log(verified.user)
-      req.verifiedUser = verified.user;
+  // console.log(req.headers.authorization)
+  const cabeceras: string = req.headers.authorization;
+  // const token: string = req.headers.authorization?.split(" ")[1] || "";
+  // console.log(token)
 
-
-      next();
-    } catch (error) {
-      console.error("error:", error);
+  try{
+    if(!cabeceras){
+      return res.json({ message: "No token provided" });
     }
-  } else {
 
-    next();
+    const token: string = req.headers.authorization?.split(" ")[1] || "";
 
-    return res.json({ message: "No token provided" });
+    if (token) {
+        try {
+          const verified = jwt.verify(token, config.JWT_SECRET);
+          console.log(verified)
+          req.verifiedUser = verified;
+          next();
+        } catch (error) {
+          console.error("error:", error);
+        }
+      }
+
+
+  }catch(err){
+    console.log(err)
   }
+
+  // if (token) {
+  //   try {
+  //     const verified = jwt.verify(token, config.JWT_SECRET);
+  //     console.log(verified)
+  //     req.verifiedUser = verified;
+
+
+  //     next();
+  //   } catch (error) {
+  //     console.error("error:", error);
+  //   }
+  // } else {
+
+  //   next();
+  //   return res.json({ message: "No token provided" });
+  // }
 
 };
 
