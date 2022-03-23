@@ -1,69 +1,43 @@
+import {createJWTToken} from "../util/auth";
+import { comparePassword} from "../util/bcrypt";
+import User from "../models/User";
 import { NextFunction } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { type } from "os";
-import config from "../config";
 
-export interface Response {
-  message:string;
-  json:any
+
+interface Request {
+    email: string,
+    password: string,
+    body:any
 }
-
-export interface Request{
-  verifiedUser:any;
-  verified:string;
-  headers:JwtPayload;
+interface Response {
+    data: any,
+    status:any
 }
+export const login = async (req: Request, res: Response, next: NextFunction) => {
 
+    const email = req.body.email;
+    const password = req.body.password;
 
+    // console.log(email + password)
 
-export const authenticate = (req: Request, res: Response, next: NextFunction):void => {
+        const user = await User.findOne({ email }).select("+password");
+        // console.log(user)
+        // if (!user) throw new Error("Invalid Username");
+        if (!user) return "Invalid";
+    
+        const validPassword = await comparePassword(password, user.password);
+        // console.log(validPassword)
+        // if (!validPassword) throw new Error("Invalid Password");
+        if (!validPassword) return "Invalid";
+    
+        const token = createJWTToken({
+          _id: user._id,
+          email: user.email,
+          displayName: user.displayName,
+        });
+    
+        const data = token + " " + user.email;
+        // console.log(data)
 
-  // console.log(req.headers.authorization)
-  const cabeceras: string = req.headers.authorization;
-  // const token: string = req.headers.authorization?.split(" ")[1] || "";
-  // console.log(token)
-
-  try{
-    if(!cabeceras){
-      return res.json({ message: "No token provided" });
-    }
-
-    const token: string = req.headers.authorization?.split(" ")[1] || "";
-
-    if (token) {
-        try {
-          const verified = jwt.verify(token, config.JWT_SECRET);
-          console.log(verified)
-          req.verifiedUser = verified;
-          next();
-        } catch (error) {
-          console.error("error:", error);
-        }
-      }
-
-
-  }catch(err){
-    console.log(err)
-  }
-
-  // if (token) {
-  //   try {
-  //     const verified = jwt.verify(token, config.JWT_SECRET);
-  //     console.log(verified)
-  //     req.verifiedUser = verified;
-
-
-  //     next();
-  //   } catch (error) {
-  //     console.error("error:", error);
-  //   }
-  // } else {
-
-  //   next();
-  //   return res.json({ message: "No token provided" });
-  // }
-
-};
-
-
-
+        return data;
+}
