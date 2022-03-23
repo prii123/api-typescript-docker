@@ -6,7 +6,7 @@
   "scripts": {
     "ts": "tsc -w",
     "dev": "nodemon ./build/src/app.js",
-    "start": "tsc && node ./build/app.js"
+    "start": "tsc && node ./build/src/app.js"
   },
   "author": "prints",
   "license": "ISC",
