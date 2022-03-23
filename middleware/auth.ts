@@ -1,7 +1,7 @@
 import {createJWTToken} from "../util/auth";
 import { comparePassword} from "../util/bcrypt";
 import User from "../models/User";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 
 declare module 'express-serve-static-core' {
 
@@ -13,7 +13,7 @@ interface Response {
     data: any
 }
 }
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: Request, res: Response) => {
 
     const email = req.body.email;
     const password = req.body.password;
@@ -36,8 +36,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
           displayName: user.displayName,
         });
     
-        const data = token + " " + user.email;
-        // console.log(data)
+        const data:any = token + " " + user.email;
+        console.log(data)
 
-        return data;
+        res.status(200).json(data);
 }

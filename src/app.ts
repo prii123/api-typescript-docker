@@ -24,10 +24,14 @@ class Server {
     this.app.use(morgan("dev"));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
+    
   }
 
   routes() {
-    this.app.use("/",login);
+    this.app.get('/', (req, res) => {
+      res.send('Hello World');
+  });
+    this.app.post("/login",login);
     this.app.use(
     "/graphql",
     authenticate,
