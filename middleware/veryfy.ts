@@ -1,21 +1,24 @@
-import { NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../config";
 
-export interface Response {
+import { Request, Response, NextFunction } from "express";
+
+declare module 'express-serve-static-core' {
+
+interface Response {
   message:string;
-  json:any
 }
 
-export interface Request{
+interface Request{
   verifiedUser:any;
   verified:string;
   headers:JwtPayload;
 }
+}
 
 
 
-export const authenticate = (req: Request, res: Response, next: NextFunction):void => {
+export const authenticate = (req: Request, res: Response, next: NextFunction):any => {
 
   // console.log(req.headers.authorization)
   const cabeceras: string = req.headers.authorization;
