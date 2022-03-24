@@ -86,8 +86,8 @@ export const createEmpresa = {
   },
   async resolve(parent:any, args:any, { verifiedUser }:any) {
     if (!verifiedUser) throw new Error("You must be logged in to do that");
-
     const userFound = await User.findById(verifiedUser._id);
+
     if (!userFound) throw new Error("Unauthorized");
 
     const post = new Empresa({

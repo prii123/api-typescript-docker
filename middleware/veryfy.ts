@@ -34,9 +34,9 @@ export const authenticate = (req: Request, res: Response, next: NextFunction):an
 
     if (token) {
         try {
-          const verified = jwt.verify(token, config.JWT_SECRET);
-          console.log(verified)
-          req.verifiedUser = verified;
+          const verified:any = jwt.verify(token, config.JWT_SECRET);
+          // console.log(verified)
+          req.verifiedUser = verified.user;
           next();
         } catch (error) {
           console.error("error:", error);
