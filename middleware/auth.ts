@@ -36,10 +36,18 @@ export const login = async (req: Request, res: Response) => {
         const token = createJWTToken({
           _id: user._id,
           email: user.email,
+          foto: user.foto,
           displayName: user.displayName,
         });
-    
-        const data:any = token + " " + user.email;
+        
+        const datoos = {
+          id: user._id,
+          email: user.email,
+          foto: user.foto,
+          displayName: user.displayName,
+        }
+        // console.log(datoos)
+        const data:any = token + " " + JSON.stringify(datoos);
         console.log(data)
 
         return res.status(200).json(data);

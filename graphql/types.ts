@@ -15,12 +15,13 @@ import {ImpuestosType} from "./typesImp";
 
 export const UserType = new GraphQLObjectType({
   name: "User",
-  description: "User type",
+  description: "Tipo de Usuario",
   fields: () => ({
     id: { type: GraphQLID },
     username: { type: GraphQLString },
     email: { type: GraphQLString },
     displayName: { type: GraphQLString },
+    foto: { type: GraphQLString },
   }),
 });
 
@@ -35,6 +36,7 @@ export const EmpresaType = new GraphQLObjectType({
     digitoVerificacion: { type: GraphQLString },
     direccion: { type: GraphQLString },
     ciudad: { type: GraphQLString },
+    logo: { type: GraphQLString },
     creador: {
       type: UserType,
       resolve(parent) {

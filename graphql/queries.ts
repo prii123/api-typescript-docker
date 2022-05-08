@@ -20,6 +20,16 @@ export const user = {
   resolve: (parent:any, { id }:any) => User.findById(id),
 };
 
+// export const users = {
+//   type: new GraphQLList(UserType),
+//   description: "retrieves a single user",
+
+//   resolve: (parent:any, { verifiedUser }:any ) =>{ 
+//     if (!verifiedUser) return "No user found";
+//     return User.find()
+//   }
+// };
+
 export const empresas = {
   type: new GraphQLList(EmpresaType),
   description: "retrieves a list of empresas",

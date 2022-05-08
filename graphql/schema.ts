@@ -6,6 +6,7 @@ import { users, user, empresas, empresa, comments, comment } from "./queries";
 // Mutations
 import {
   register,
+  modificarUsuario,
   login,
   createEmpresa,
   addComment,
@@ -37,7 +38,8 @@ const MutationType = new GraphQLObjectType({
   name: "MutationType",
   description: "Mutations",
   fields: {
-    register,
+    register, //crear usuario
+    modificarUsuario, // modificar usuario
     login,
     createEmpresa,
     addComment,
