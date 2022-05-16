@@ -4,7 +4,6 @@ import { authenticate } from "../middleware/veryfy";
 import User from "../models/User";
 import SubCuentas from "../models/SubCuentas";
 
-
 class AuxiliarRouter {
   router: Router;
 
@@ -13,12 +12,12 @@ class AuxiliarRouter {
     this.routes();
   }
 
-  async listarAuxiliar (req: Request, res: Response): Promise<void>{
-    try{
-        const lista = await Auxiliares.find();
-        res.status(200).json(lista)
-    }catch(err){
-        console.log(err)
+  async listarAuxiliar(req: Request, res: Response): Promise<void> {
+    try {
+      const lista = await Auxiliares.find();
+      res.status(200).json(lista);
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -29,12 +28,12 @@ class AuxiliarRouter {
       const empresaId = req.body.empresaId;
       const auxiliares = req.body.auxiliares;
       const nombre = req.body.nombre;
-      const tercero = req.body.tercero
+      const tercero = req.body.tercero;
       const saldo = req.body.saldo;
 
       //   console.log(req.verifiedUser)
 
-       const claseCuenta: IAuxiliares = new Auxiliares({
+      const claseCuenta: IAuxiliares = new Auxiliares({
         userId: verifie._id,
         empresaId,
         auxiliares,
@@ -43,44 +42,120 @@ class AuxiliarRouter {
         saldo,
       });
 
-     const creadoAuxiliar = await claseCuenta.save();
+      const creadoAuxiliar = await claseCuenta.save();
 
-
-  
- 
-     const cuentaActualizado = await SubCuentas.findByIdAndUpdate(
-       id,
-       {
-         $push: { auxiliares: creadoAuxiliar._id },
-       },
-       { new: true }
-     );
+      const cuentaActualizado = await SubCuentas.findByIdAndUpdate(
+        id,
+        {
+          $push: { auxiliares: creadoAuxiliar._id },
+        },
+        { new: true }
+      );
 
       res.status(200).json(cuentaActualizado);
     } catch (err) {
       console.log(err);
-      res.status(500).json('has enviado un valor erroneo')
+      res.status(500).json("has enviado un valor erroneo");
+    }
+  }
+
+  async crearMasivo(req: Request, res: Response): Promise<void> {
+    try {
+      // const { id } = req.params;
+      const data = req.body;
+      const verifie = req.verifiedUser;
+      // console.log(data)
+      if (data.auxiliar) {
+        data.auxiliar.map(async (aux: any) => {
+          const empresaId = "1085306970";
+          const clase = aux.clase;
+          const grupo = aux.grupo;
+          const cuenta = aux.cuenta;
+          const subcuenta = aux.subcuenta;
+          const auxiliares = aux.auxiliares;
+          const nombre = aux.nombre;
+          const tercero = aux.tercero;
+          const saldo = aux.saldo;
+
+          const busquedaDelaSubcuenta = await SubCuentas.find({
+            subcuentas: subcuenta,
+          });
+          console.log(busquedaDelaSubcuenta)
+          if (busquedaDelaSubcuenta[0]) {
+            const id = busquedaDelaSubcuenta[0]._id;
+
+            const auxiliaresss: IAuxiliares = new Auxiliares({
+              userId: verifie._id,
+              empresaId,
+              clase,
+              grupo,
+              cuenta,
+              subcuenta,
+              auxiliares,
+              nombre,
+              tercero,
+              saldo,
+            });
+
+            const creadoAuxiliar = await auxiliaresss.save();
+            // console.log(creadoAuxiliar)
+            const cuentaActualizado = await SubCuentas.findByIdAndUpdate(
+              id,
+              {
+                $push: { auxiliares: creadoAuxiliar._id },
+              },
+              { new: true }
+            );
+            console.log(cuentaActualizado)
+          }
+        });
+      }
+
+      //   console.log(req.verifiedUser)
+
+      res.status(200).json("cuentaActualizado");
+    } catch (err) {
+      console.log(err);
+      res.status(500).json("has enviado un valor erroneo");
     }
   }
 
   async actualizarAuxiliares(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
-    const auxiliar = await Auxiliares.findByIdAndUpdate(id, req.body, { new: true });
+    const auxiliar = await Auxiliares.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
     res.json(auxiliar);
   }
 
-  async borrarTodo (req: Request, res: Response): Promise<void>{
+  async borrarTodo(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
-     await Auxiliares.deleteMany({userId: req.verifiedUser._id, empresaId: id});
-    res.json('ready');
+    await Auxiliares.deleteMany({
+      userId: req.verifiedUser._id,
+      empresaId: id,
+    });
+    res.json("ready");
   }
 
   routes() {
-    this.router.get('/listarauxiliar', [authenticate], this.listarAuxiliar);
+    this.router.get("/listarauxiliar", [authenticate], this.listarAuxiliar);
     // this.router.get('/:id', this.getUser);
     this.router.post("/crearauxiliar/:id", [authenticate], this.crear);
-    this.router.put('/actualizarauxiliar/:id', [authenticate], this.actualizarAuxiliares);
-    this.router.delete('/borrarauxiliares/:id', [authenticate], this.borrarTodo);
+    this.router.post(
+      "/crearauxiliarmasivo",
+      [authenticate],
+      this.crearMasivo
+    );
+    this.router.put(
+      "/actualizarauxiliar/:id",
+      [authenticate],
+      this.actualizarAuxiliares
+    );
+    this.router.delete(
+      "/borrarauxiliares/:id",
+      [authenticate],
+      this.borrarTodo
+    );
   }
 }
 

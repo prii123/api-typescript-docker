@@ -19,10 +19,34 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    clase: {
+      type: String,
+      maxLength: 1,
+      minLength: 1,
+      required: true,
+    },
+    grupo: {
+      type: String,
+      maxLength: 2,
+      minLength: 2,
+      required: true,
+    },
+    cuenta: {
+      type: String,
+      maxLength: 4,
+      minLength: 4,
+      required: true,
+    },
+    subcuenta: {
+      type: String,
+      maxLength: 6,
+      minLength: 6,
+      required: true,
+    },
     auxiliares: {
       type: String,
-      maxLength: 8,
-      minLength: 8,
+      maxLength: 9,
+      minLength: 9,
       required: true,
     },
 

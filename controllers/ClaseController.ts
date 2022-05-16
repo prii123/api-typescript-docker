@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, Router, response } from "express";
 import Clase, { IClases } from "../models/Clases";
 import { authenticate } from "../middleware/veryfy";
+import Auxiliares from "../models/Auxiliares";
 
 
 
@@ -16,6 +17,7 @@ class ClasesRouter {
   async listar (req: Request, res: Response): Promise<void>{
     try{
         const lista = await Clase.find()
+        .sort({clase: 1})
         .populate([{   // nivel 1  grupos
           path: 'grupos',
           model: 'Grupos',
@@ -25,22 +27,22 @@ class ClasesRouter {
             populate:{ // nivel 3 sub cuentas
               path:'subcuentas',
               model:'SubCuentas',
-              populate:{ // nivel 4 auxiliares
-                path:'auxiliares',
-                model:'Auxiliares'
-              }
+              // populate:{ // nivel 4 auxiliares
+              //   path:'auxiliares',
+              //   model:'Auxiliares'
+              // }
             }
 
           }
       }])
 
+
+      
+      const auxiliares = await Auxiliares.find()
   
 
       //  console.log(lista)
-        res.status(200).json(lista)
-
-
-
+        res.status(200).json({lista, auxiliares})
 
     }catch(err){
         console.log(err)
