@@ -36,13 +36,118 @@ class ClasesRouter {
           }
       }])
 
-
-      
       const auxiliares = await Auxiliares.find()
+
+      // METODOS DE REDUCCION PARA RESPONDER
+      //saldo por clase de cuenta
+      const saldoPorClase = auxiliares.reduce(
+        (acumulador: any, valorActual:any) => {
+          const elementoYaExiste = acumulador.find(
+            (elemento:any) => elemento.clase === valorActual.clase
+          );
+          if (elementoYaExiste) {
+            return acumulador.map((elemento:any) => {
+              if (elemento.clase === valorActual.clase) {
+                return {
+                  ...elemento,
+                  saldoTotal: elemento.saldo + valorActual.saldo,
+                };
+              }
+              return elemento;
+            });
+          }
   
+          const tot = {
+            clase: valorActual.clase,
+            saldo: valorActual.saldo,
+          };
+  
+          //  console.log(tot);
+          return [...acumulador, tot]; //[...acumulador, valorActual];
+        },
+        []
+      );
+      //saldo por grupo de cuentas
+      const saldosPorGrupo = auxiliares.reduce(
+        (acumulador: any, valorActual:any) => {
+          const elementoYaExiste = acumulador.find(
+            (elemento:any) => elemento.grupo === valorActual.grupo
+          );
+          if (elementoYaExiste) {
+            return acumulador.map((elemento:any) => {
+              if (elemento.grupo === valorActual.grupo) {
+                return {
+                  ...elemento,
+                  saldoTotal: elemento.saldo + valorActual.saldo,
+                };
+              }
+              return elemento;
+            });
+          }
+  
+          const tot = {
+            grupo: valorActual.grupo,
+            saldo: valorActual.saldo,
+          };
+  
+          //  console.log(tot);
+          return [...acumulador, tot]; //[...acumulador, valorActual];
+        },
+        []
+      );
+      //saldo por cueentas
+      const saldosPorCuentas = auxiliares.reduce(
+        (acumulador: any, valorActual:any) => {
+          const elementoYaExiste = acumulador.find(
+            (elemento:any) => elemento.cuenta === valorActual.cuenta
+          );
+          if (elementoYaExiste) {
+            return acumulador.map((elemento:any) => {
+              if (elemento.cuenta === valorActual.cuenta) {
+                return {
+                  ...elemento,
+                  saldoTotal: elemento.saldo + valorActual.saldo,
+                };
+              }
+              return elemento;
+            });
+          }
+  
+          const tot = {
+            cuenta: valorActual.cuenta,
+            saldo: valorActual.saldo,
+          };
+  
+          //  console.log(tot);
+          return [...acumulador, tot]; //[...acumulador, valorActual];
+        },
+        []
+      );
+
+      const valo_pasivo = saldoPorClase.filter((e:any)=>e.clase == '2')[0]?.saldoTotal;
+      const valo_patrimonio = saldoPorClase.filter((e:any)=>e.clase == '3')[0]?.saldoTotal;
+      const pasivoMasPatrimonio = Math.round(valo_pasivo + valo_patrimonio);
+
+      const valor_ingreso = saldoPorClase?.filter((e:any)=>e.clase == '4')[0]?.saldoTotal || 0;
+      const valor_gasto = saldoPorClase?.filter((e:any)=>e.clase == '5')[0]?.saldoTotal || 0;
+      const valor_costo = saldoPorClase?.filter((e:any)=>e.clase == '6')[0]?.saldoTotal|| 0;
+      const valor_costoProduccion = saldoPorClase?.filter((e:any)=>e.clase == '7')[0]?.saldoTotal || 0;
+      const utilidad = Math.round(valor_ingreso  - valor_gasto - valor_costo - valor_costoProduccion);
+      const impuesto = Math.round((utilidad * 31)/100)
+      const utilidadDespuesDeImpuesto = Math.round(utilidad - impuesto)
+
+      // console.log(valor_ingreso)
+      const valores_adicionales = {
+        pasivoMasPatrimonio,
+        utilidad,
+        impuesto,
+        utilidadDespuesDeImpuesto
+      }
+      // console.log(valores_adicionales)
+
 
       //  console.log(lista)
-        res.status(200).json({lista, auxiliares})
+        res.status(200).json({lista, saldoPorClase, saldosPorGrupo, saldosPorCuentas, valores_adicionales})
 
     }catch(err){
         console.log(err)

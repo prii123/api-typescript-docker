@@ -119,12 +119,12 @@ export const createEmpresa = {
 
     const post = new Empresa({
       creadorId: verifiedUser._id,
-      razonSocial: args.razonSocial,
-      body: args.body,
+      razonSocial: args.razonSocial.toLowerCase(),
+      body: args.body.toLowerCase(),
       nit: args.nit,
       digitoVerificacion: args.digitoVerificacion,
-      direccion: args.direccion,
-      ciudad: args.ciudad,
+      direccion: args.direccion.toLowerCase(),
+      ciudad: args.ciudad.toLowerCase(),
       logo: args.logo,
     });
 

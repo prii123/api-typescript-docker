@@ -13,6 +13,7 @@ import SubCuentas from '../controllers/SubCuentaController';
 import Cuenta from '../controllers/CuentaController'
 import Grupo from '../controllers/GrupoController'
 import Clases from '../controllers/ClaseController'
+import Empresas from "../controllers/EmpresasController";
 
 // export type login=void
 
@@ -42,6 +43,7 @@ class Server {
 
     // estas son las rutas que funcionan sin graphQL
     this.app.post("/login",login);
+    this.app.use('/api', Empresas); //empresas
     this.app.use('/api', Clases); // clases
     this.app.use('/api', Grupo); //Grupo
     this.app.use('/api', Cuenta); //cuentas
