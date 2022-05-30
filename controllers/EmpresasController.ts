@@ -13,6 +13,7 @@ class EmpresasRouter {
     this.routes();
   }
 
+
   async listarEmpresas (req: Request, res: Response): Promise<void>{
     try{
         const valorBuscado = req.body.search.toLowerCase(   );
@@ -37,9 +38,24 @@ async empresa (req: Request, res: Response): Promise<void>{
   }
 }
 
+async empresaUpdate (req: Request, res: Response): Promise<void>{
+  try{
+      const id = req.body.id
+      const img = req.body.logo
+      // console.log(id +'----'+img)
+      const data = await Empresa.findOneAndUpdate({_id: id}, { logo: img})
+      // console.log(data)
+      res.status(200).json(data)
+  }catch(err){
+      console.log(err)
+      res.json('hay un error')
+  }
+}
+
   routes() {
     this.router.post('/buscarEmpresas', [authenticate], this.listarEmpresas);
     this.router.post('/buscarempresa', [authenticate], this.empresa);
+    this.router.post('/buscarempresaupdate', [authenticate], this.empresaUpdate);
   }
 }
 

@@ -65,16 +65,17 @@ class GruposRouter {
       const verifie = req.verifiedUser;
       // toma todo el objeto que viene en forma json
       const data = req.body;
+      const empresaIdentificador = data.empresaId;
       // utiliza el map para agregar uno por uno a la base de datos, como del front se envia un json formado por un excel
       //cada dato se procesara aqui
       if (data.grupos.length) {
         data.grupos.map(async (grup: any) => {
-          const empresaId = "1085306970" //grup.empresaId; 
+          const empresaId = empresaIdentificador //grup.empresaId; 
           const grupo = grup.grupo;
           const nombre = grup.nombre;
           const claseNumero = grup.clase;
 
-          const busquedaDeLaCLase = await Clase.find({clase: claseNumero})
+          const busquedaDeLaCLase = await Clase.find({clase: claseNumero, empresaId: empresaId})
           // console.log(busquedaDeLaCLase)
           if(busquedaDeLaCLase[0]){
             // console.log(busquedaDeLaCLase[0]._id)

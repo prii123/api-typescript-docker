@@ -61,20 +61,19 @@ class SubCuentasRouter {
   async crearMasivo(req: Request, res: Response): Promise<void> {
     try {
       const data = req.body;
+      const empresaId = data.empresaId; //grup.empresaId;
       const verifie = req.verifiedUser;
       if (data.subCuentas) {
         // const { id } = req.params;  subcuenta
-        
+
         // console.log(req.body);
 
-        data.subCuentas.map(async (cuent : any) => {
-          const empresaId = "1085306970"; //grup.empresaId; 
+        data.subCuentas.map(async (cuent: any) => {
           const subcuentas = cuent.subcuenta;
           const nombre = cuent.nombre;
           const cuentas = cuent.cuenta;
 
-
-          const busquedaDeLaCuenta = await Cuentas.find({ cuentas: cuentas });
+          const busquedaDeLaCuenta = await Cuentas.find({ cuentas: cuentas, empresaId: empresaId });
           // console.log(busquedaDeLaCuenta);
           if (busquedaDeLaCuenta[0]) {
             // console.log(busquedaDeLGrupo[0]._id);

@@ -63,11 +63,12 @@ class AuxiliarRouter {
     try {
       // const { id } = req.params;
       const data = req.body;
+      const empresaId = data.empresaId;
       const verifie = req.verifiedUser;
       // console.log(data)
       if (data.auxiliar) {
         data.auxiliar.map(async (aux: any) => {
-          const empresaId = "1085306970";
+         
           const clase = aux.clase;
           const grupo = aux.grupo;
           const cuenta = aux.cuenta;
@@ -78,9 +79,9 @@ class AuxiliarRouter {
           const saldo = aux.saldo;
 
           const busquedaDelaSubcuenta = await SubCuentas.find({
-            subcuentas: subcuenta,
+            subcuentas: subcuenta, empresaId: empresaId
           });
-          console.log(busquedaDelaSubcuenta)
+          // console.log(busquedaDelaSubcuenta)
           if (busquedaDelaSubcuenta[0]) {
             const id = busquedaDelaSubcuenta[0]._id;
 
@@ -129,10 +130,11 @@ class AuxiliarRouter {
   }
 
   async borrarTodo(req: Request, res: Response): Promise<void> {
-    const { id } = req.params;
+    // const { id } = req.params;
+    const empresaId = req.body.empresaId;
+    // console.log(empresaId)
     await Auxiliares.deleteMany({
-      userId: req.verifiedUser._id,
-      empresaId: id,
+      empresaId: empresaId,
     });
     res.json("ready");
   }
@@ -152,7 +154,7 @@ class AuxiliarRouter {
       this.actualizarAuxiliares
     );
     this.router.delete(
-      "/borrarauxiliares/:id",
+      "/borrarauxiliares",
       [authenticate],
       this.borrarTodo
     );

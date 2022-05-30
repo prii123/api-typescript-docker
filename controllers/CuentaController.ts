@@ -23,6 +23,7 @@ class CuentasRouter {
   async crear(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
+      
       const verifie = req.verifiedUser;
       const empresaId = req.body.empresaId;
       const cuentas = req.body.cuentas;
@@ -36,7 +37,7 @@ class CuentasRouter {
         cuentas,
         nombre,
       });
-      // se guarda la cuenta
+      // se guarda la cuentaa
       const creacionCuenta = await claseCuenta.save();
 
       // console.log(creacionCuenta)
@@ -60,20 +61,20 @@ class CuentasRouter {
       const verifie = req.verifiedUser;
       // toma todo el objeto que viene en forma json
       const data = req.body;
+      const empresaId = data.empresaId;
       // utiliza el map para agregar uno por uno a la base de datos, como del front se envia un json formado por un excel
       //cada dato se procesara aqui
       // console.log(data.cuentass)
       if (data.cuentass)  {
         data.cuentass.map(async (grup: any) => {
 
-          const empresaId = "1085306970"; //grup.empresaId; 
           const cuentas = grup.cuentas;
           const nombre = grup.nombre;
           const claseGrupo = grup.grupo;
 
-         
-            const busquedaDeLGrupo = await Grupo.find({ grupo: claseGrupo });
-            // console.log(busquedaDeLaCLase) 
+
+            const busquedaDeLGrupo = await Grupo.find({ grupo: claseGrupo, empresaId: empresaId });
+            // console.log(busquedaDeLaCLase)
             if (busquedaDeLGrupo[0]) {
               // console.log(busquedaDeLGrupo[0]._id);
               const id = busquedaDeLGrupo[0]._id;
