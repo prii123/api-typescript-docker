@@ -42,8 +42,6 @@ class ClasesRouter {
           },
         ]);
 
-      // console.log(lista);
-
       const auxiliares = await Auxiliares.find({ empresaId: idEmpresa });
 
       // METODOS DE REDUCCION PARA RESPONDER

@@ -20,7 +20,7 @@ class SubCuentasRouter {
   }
 
   routes() {
-    // this.router.get("/listarsubcuenta", [authenticate], this.listarAuxiliar);
+
     this.router.put(
       "/actualizarusuario/:id",
       [authenticate],

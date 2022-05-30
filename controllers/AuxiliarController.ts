@@ -130,9 +130,9 @@ class AuxiliarRouter {
   }
 
   async borrarTodo(req: Request, res: Response): Promise<void> {
-    // const { id } = req.params;
+    
     const empresaId = req.body.empresaId;
-    // console.log(empresaId)
+   
     await Auxiliares.deleteMany({
       empresaId: empresaId,
     });
