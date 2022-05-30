@@ -8,6 +8,7 @@ export interface IEmpresa extends mongoose.Document {
   direccion: string;
   ciudad: string;
   body: string;
+  logo: string;
 }
 
 const empresaSchema = new Schema(
@@ -36,6 +37,9 @@ const empresaSchema = new Schema(
       required: true,
     },
     body: {
+      type: String,
+    },
+    logo: {
       type: String,
     },
   },

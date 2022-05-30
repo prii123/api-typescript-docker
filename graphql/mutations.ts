@@ -1,23 +1,14 @@
-import {
-  GraphQLString,
-  GraphQLInt,
-  GraphQLID,
-  GraphQLNonNull
-} from "graphql"
+import { GraphQLString, GraphQLInt, GraphQLID, GraphQLNonNull } from "graphql";
 import User, { IUser } from "../models/User";
-import Empresa, {IEmpresa} from "../models/Empresa";
-import Comment,{IComment} from "../models/Comment";
-import Impuestos, {IImpuestos} from "../models/Impuestos";
-import Claves, {IClaves} from "../models/Claves";
+import Empresa, { IEmpresa } from "../models/Empresa";
+import Comment, { IComment } from "../models/Comment";
+import Impuestos, { IImpuestos } from "../models/Impuestos";
+import Claves, { IClaves } from "../models/Claves";
 
-import {createJWTToken} from "../util/auth";
-import {encryptPassword, comparePassword} from "../util/bcrypt";
-import {
-  EmpresaType,
-  CommentType,
-  ClavesType,
-} from "./types";
-import {ImpuestosType} from "./typesImp";
+import { createJWTToken } from "../util/auth";
+import { encryptPassword, comparePassword } from "../util/bcrypt";
+import { EmpresaType, CommentType, ClavesType, UserType } from "./types";
+import { ImpuestosType } from "./typesImp";
 
 export const register = {
   type: GraphQLString,
@@ -26,14 +17,20 @@ export const register = {
     email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) },
     displayName: { type: new GraphQLNonNull(GraphQLString) },
+    foto: { type: new GraphQLNonNull(GraphQLString) },
   },
-  async resolve(parent: any, args:any) {
-
-    const {username, email, password, displayName } = args;
-    const user: IUser = new User({ username, email, password, displayName });
+  async resolve(parent: any, args: any) {
+    const { username, email, password, displayName, foto } = args;
+    const user: IUser = new User({
+      username,
+      email,
+      password,
+      displayName,
+      foto,
+    });
     user.password = await encryptPassword(user.password);
     await user.save();
-    
+
     const token = createJWTToken({
       _id: user._id,
       email: user.email,
@@ -43,13 +40,42 @@ export const register = {
   },
 };
 
+export const modificarUsuario = {
+  type: UserType,
+  args: {
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    username: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    displayName: { type: new GraphQLNonNull(GraphQLString) },
+    foto: { type: new GraphQLNonNull(GraphQLString) },
+  },
+  async resolve(parent: any, args: any, { verifiedUser }: any) {
+    const { id, username, email, displayName, foto } = args;
+
+    if (!verifiedUser) throw new Error("Unauthorized");
+    const userUpdate = await User.findByIdAndUpdate(
+      { _id: id },
+      { username, email, displayName, foto },
+      {
+        new: true,
+      }
+    );
+
+    // console.log(userUpdate)
+
+    if (!userUpdate) throw new Error("User no encontrado");
+
+    return userUpdate;
+  },
+};
+
 export const login = {
   type: GraphQLString,
   args: {
     email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) },
   },
-  async resolve(parent:any, args:any) {
+  async resolve(parent: any, args: any) {
     const { email, password } = args;
     const user = await User.findOne({ email }).select("+password");
 
@@ -83,8 +109,9 @@ export const createEmpresa = {
     digitoVerificacion: { type: new GraphQLNonNull(GraphQLString) },
     direccion: { type: new GraphQLNonNull(GraphQLString) },
     ciudad: { type: new GraphQLNonNull(GraphQLString) },
+    logo: { type: new GraphQLNonNull(GraphQLString) },
   },
-  async resolve(parent:any, args:any, { verifiedUser }:any) {
+  async resolve(parent: any, args: any, { verifiedUser }: any) {
     if (!verifiedUser) throw new Error("You must be logged in to do that");
     const userFound = await User.findById(verifiedUser._id);
 
@@ -92,12 +119,13 @@ export const createEmpresa = {
 
     const post = new Empresa({
       creadorId: verifiedUser._id,
-      razonSocial: args.razonSocial,
-      body: args.body,
+      razonSocial: args.razonSocial.toLowerCase(),
+      body: args.body.toLowerCase(),
       nit: args.nit,
       digitoVerificacion: args.digitoVerificacion,
-      direccion: args.direccion,
-      ciudad: args.ciudad,
+      direccion: args.direccion.toLowerCase(),
+      ciudad: args.ciudad.toLowerCase(),
+      logo: args.logo,
     });
 
     return post.save();
@@ -114,17 +142,18 @@ export const updateEmpresa = {
     direccion: { type: new GraphQLNonNull(GraphQLString) },
     ciudad: { type: new GraphQLNonNull(GraphQLString) },
     razonSocial: { type: new GraphQLNonNull(GraphQLString) },
+    logo: { type: new GraphQLNonNull(GraphQLString) },
   },
   async resolve(
-    parent:any,
-    { id, direccion, ciudad, body, razonSocial }:any,
-    { verifiedUser }:any
+    parent: any,
+    { id, direccion, ciudad, body, razonSocial, logo }: any,
+    { verifiedUser }: any
   ) {
     if (!verifiedUser) throw new Error("Unauthorized");
 
     const empresaUpdated = await Empresa.findOneAndUpdate(
       { _id: id }, // , authorId: verifiedUser._id
-      { direccion, body, ciudad, razonSocial },
+      { direccion, body, ciudad, razonSocial, logo },
       {
         new: true,
         //runValidators: true,
@@ -148,9 +177,9 @@ export const createImpuesto = {
     comentario: { type: new GraphQLNonNull(GraphQLString) },
   },
   resolve(
-    parent:any,
-    { empresaId, impuesto, responsabilidad, comentario }:any,
-    { verifiedUser }:any
+    parent: any,
+    { empresaId, impuesto, responsabilidad, comentario }: any,
+    { verifiedUser }: any
   ) {
     if (!verifiedUser) throw new Error("You must be logged in to do that");
 
@@ -158,7 +187,7 @@ export const createImpuesto = {
       empresaId,
       impuesto,
       responsabilidad,
-      comentario
+      comentario,
     });
 
     return post.save();
@@ -171,23 +200,21 @@ export const modificarComentarioImpuesto = {
     id: { type: new GraphQLNonNull(GraphQLID) },
     comentario: { type: new GraphQLNonNull(GraphQLString) },
   },
- async resolve(
-    parent:any,
-    { id, comentario }:any,
-    { verifiedUser }:any
-  ) {
+  async resolve(parent: any, { id, comentario }: any, { verifiedUser }: any) {
     if (!verifiedUser) throw new Error("You must be logged in to do that");
 
     const post = await Impuestos.findByIdAndUpdate(
-      {_id: id},
-      {comentario}, {
-      new: true,
-      runValidators: true,
-    });
+      { _id: id },
+      { comentario },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!post) throw new Error("No comment with the given ID");
 
-    return post
+    return post;
   },
 };
 
@@ -204,9 +231,9 @@ export const createClave = {
     plus: { type: GraphQLString },
   },
   resolve(
-    parent:any,
-    { empresaId, entidad, usuario, contrasenna, comentario, plus }:any,
-    { verifiedUser }:any
+    parent: any,
+    { empresaId, entidad, usuario, contrasenna, comentario, plus }: any,
+    { verifiedUser }: any
   ) {
     if (!verifiedUser) throw new Error("You must be logged in to do that");
 
@@ -236,9 +263,9 @@ export const actualizarClaves = {
     plus: { type: GraphQLString },
   },
   async resolve(
-    parent:any,
-    { id, entidad, usuario, contrasenna, comentario, plus }:any,
-    { verifiedUser }:any
+    parent: any,
+    { id, entidad, usuario, contrasenna, comentario, plus }: any,
+    { verifiedUser }: any
   ) {
     const claveActualizada = await Claves.findByIdAndUpdate(
       {
@@ -250,7 +277,7 @@ export const actualizarClaves = {
         usuario,
         contrasenna,
         comentario,
-        plus
+        plus,
       },
       {
         new: true,
@@ -271,7 +298,7 @@ export const addComment = {
     comment: { type: new GraphQLNonNull(GraphQLString) },
     postId: { type: new GraphQLNonNull(GraphQLID) },
   },
-  resolve(parent:any, { postId, comment }:any, { verifiedUser }:any) {
+  resolve(parent: any, { postId, comment }: any, { verifiedUser }: any) {
     const newComment: IComment = new Comment({
       userId: verifiedUser._id,
       postId,
@@ -288,7 +315,7 @@ export const updateComment = {
     id: { type: new GraphQLNonNull(GraphQLID) },
     comment: { type: new GraphQLNonNull(GraphQLString) },
   },
-  async resolve(parent:any, { id, comment }:any, { verifiedUser }:any) {
+  async resolve(parent: any, { id, comment }: any, { verifiedUser }: any) {
     if (!verifiedUser) throw new Error("UnAuthorized");
 
     const commentUpdated = await Comment.findOneAndUpdate(
@@ -317,7 +344,7 @@ export const deleteComment = {
   args: {
     id: { type: new GraphQLNonNull(GraphQLID) },
   },
-  async resolve(parent:any, { id }:any, { verifiedUser }:any) {
+  async resolve(parent: any, { id }: any, { verifiedUser }: any) {
     if (!verifiedUser) throw new Error("Unauthorized");
 
     const commentDelete = await Comment.findOneAndDelete({
@@ -331,5 +358,3 @@ export const deleteComment = {
     return "Comment deleted";
   },
 };
-
-

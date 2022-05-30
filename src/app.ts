@@ -7,8 +7,18 @@ import morgan from "morgan";
 import { authenticate } from "../middleware/veryfy";
 import {login} from '../middleware/auth'
 
-export type login=void
 
+import Auxiares from '../controllers/AuxiliarController'
+import SubCuentas from '../controllers/SubCuentaController';
+import Cuenta from '../controllers/CuentaController'
+import Grupo from '../controllers/GrupoController'
+import Clases from '../controllers/ClaseController'
+import Empresas from "../controllers/EmpresasController";
+import Usuario from "../controllers/Usuario";
+
+// export type login=void
+
+//creacion del servidor por medio de una clase
 class Server {
   public app: express.Application;
   constructor() {
@@ -31,7 +41,18 @@ class Server {
     this.app.get('/', (req, res) => {
       res.send('Hello World');
   });
+
+    // estas son las rutas que funcionan sin graphQL
     this.app.post("/login",login);
+    this.app.use('/api', Usuario); //usuarios
+    this.app.use('/api', Empresas); //empresas
+    this.app.use('/api', Clases); // clases
+    this.app.use('/api', Grupo); //Grupo
+    this.app.use('/api', Cuenta); //cuentas
+    this.app.use('/api', SubCuentas); //subcuentas
+    this.app.use('/api', Auxiares); //cuentas auxiliares
+
+    // estas son las rutas que especificamente utilizan graphQL
     this.app.use(
     "/graphql",
     authenticate,

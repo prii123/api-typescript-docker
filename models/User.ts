@@ -5,6 +5,7 @@ export interface IUser extends mongoose.Document {
   email: string;
   password: string;
   displayName: string;
+  foto: string;
 }
 
 const userSchema = new Schema(
@@ -29,7 +30,10 @@ const userSchema = new Schema(
     },
     displayName: {
       type: String,
-      required: true,
+      required: false,
+    },
+    foto: {
+      type: String
     },
   },
   {
