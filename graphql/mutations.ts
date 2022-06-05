@@ -93,7 +93,7 @@ export const login = {
       displayName: user.displayName
     });
 
-    const data = token + " " + user.email;
+    const data = token + " " + user;
 
     return data;
   },
