@@ -90,10 +90,10 @@ export const login = {
     const token = createJWTToken({
       _id: user._id,
       email: user.email,
-      displayName: user.displayName,
+      displayName: user.displayName
     });
 
-    const data = token + " " + user.email;
+    const data = token + " " + user;
 
     return data;
   },
