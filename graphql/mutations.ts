@@ -93,11 +93,9 @@ export const login = {
       displayName: user.displayName
     });
 
-    console.log(token)
 
-    const data = token + " " + user;
+    return token;
 
-    return data;
   },
 };
 
