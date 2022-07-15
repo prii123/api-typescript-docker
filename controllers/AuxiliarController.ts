@@ -107,7 +107,7 @@ class AuxiliarRouter {
               },
               { new: true }
             );
-            console.log(cuentaActualizado)
+            // console.log(cuentaActualizado)
           }
         });
       }

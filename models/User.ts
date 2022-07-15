@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { Schema, model, ObjectId } from "mongoose";
 
 export interface IUser extends mongoose.Document {
   username: string;
@@ -35,11 +35,12 @@ const userSchema = new Schema(
     foto: {
       type: String
     },
+    hojaVida: [{ type: Schema.Types.ObjectId, ref: "HojaVida" }],
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  } 
 );
 
 export default model<IUser>("User", userSchema);
